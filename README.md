@@ -1,7 +1,10 @@
 
 # 🎯 InfluenShow – Real-Time Influencer Intelligence Dashboard
+## 📸 Explore how the dashboard looks and works through these live interface screenshots:
 
-## 🧠 Real-World Problem
+<table> <tr> <td><img src="assets/Screenshot 2025-06-11 213538.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213713.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213726.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213744.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213758.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213809.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213823.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213837.png" width="400"/></td> </tr> </table>
+
+## Real-World Problem
 
 In today’s digital age, **90% of brands rely on influencer marketing**, but most decisions are based on **gut feeling**, **outdated spreadsheets**, or **manual Instagram scrolling**. This leads to:
 
