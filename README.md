@@ -4,27 +4,21 @@
 
 <table>
   <tr>
-    <td><img src="assets/Screenshot 2025-06-11 213538.png" width="400"/></td>
-    <td><img src="assets/Screenshot 2025-06-11 213713.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 231459.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 231522.png" width="400"/></td>
   </tr>
   <tr>
-    <td><img src="assets/Screenshot 2025-06-11 213726.png" width="400"/></td>
-    <td><img src="assets/Screenshot 2025-06-11 213744.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 231536.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 231553.png" width="400"/></td>
   </tr>
   <tr>
-    <td><img src="assets/Screenshot 2025-06-11 213758.png" width="400"/></td>
-    <td><img src="assets/Screenshot 2025-06-11 213809.png" width="400"/></td>
-  </tr>
-  <tr>
-    <td><img src="assets/Screenshot 2025-06-11 213823.png" width="400"/></td>
-    <td><img src="assets/Screenshot 2025-06-11 213837.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 231603.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 230709.png" width="400"/></td>
   </tr>
     <tr>
-    <td><img src="assets/Screenshot 2025-06-26 230709.png" width="600"/></td>
-    <td><img src="assets/Screenshot 2025-06-26 230729.png" width="600"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 230729.png" width="400"/></td>
   </tr>
 </table>
-
 
 ---
 
