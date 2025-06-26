@@ -1,0 +1,90 @@
+import os
+import math
+import streamlit as st
+from dotenv import load_dotenv
+from streamlit_extras.stylable_container import stylable_container
+from components.llm_brand_suitability import build_influencer_context, get_brand_suitability
+
+load_dotenv()
+
+def safe_int(value):
+    try:
+        return int(float(value)) if value is not None and not math.isnan(float(value)) else 0
+    except:
+        return 0
+
+def show_llm_tab(df):
+    required_cols = ['channel_id', 'domain', 'influence_score']
+    missing = [col for col in required_cols if col not in df.columns]
+    if missing:
+        st.error(f"❌ Missing columns: {', '.join(missing)}")
+        st.stop()
+
+    st.sidebar.header("🎯 LLM Target Preferences")
+    domain_options = sorted(df['domain'].dropna().unique())
+    if not domain_options:
+        st.warning("No valid domains available.")
+        return
+
+    target_domain = st.sidebar.selectbox("Select Domain", domain_options)
+    target_audience = st.sidebar.text_input("Describe Target Audience", "Urban Gen Z Females")
+
+    df_filtered = df[df['domain'] == target_domain].sort_values(by='influence_score', ascending=False).head(5)
+
+    if df_filtered.empty:
+        st.warning("⚠️ No influencers found for this domain")
+        return
+
+    st.markdown('<div class="fadein">', unsafe_allow_html=True)
+    st.markdown("### ✨ Top 5 Influencers in selected domain")
+
+    tabs = st.tabs([
+        f"@{row['channel_id']} ({row['influence_score']:.1f})"
+        for _, row in df_filtered.iterrows()
+    ])
+
+    for i, (idx, profile) in enumerate(df_filtered.iterrows()):
+        channel_id = str(profile['channel_id'])
+
+        with tabs[i]:
+            with stylable_container(
+                key=f"chat_container_{channel_id}_{i}",
+                css_styles="""
+                    padding: 14px;
+                    background-color: rgba(255, 255, 255, 0.04);
+                    border-radius: 12px;
+                    border: 1px solid rgba(0,0,0,0.1);
+                    box-shadow: 0 0 8px rgba(0,0,0,0.05);
+                """,
+            ):
+                followers = safe_int(profile.get('followers'))
+                likes = safe_int(profile.get('avg_likes'))
+                try:
+                    eng = float(profile.get('60_day_eng_rate', 0))
+                    eng_rate = f"{eng:.2f}%"
+                except:
+                    eng_rate = "N/A"
+
+                st.markdown(f"### 👤 Influencer: @{channel_id}")
+                st.markdown(f"- **Country:** {profile.get('country', 'N/A')}")
+                st.markdown(f"- **Followers:** {followers:,}")
+                st.markdown(f"- **Average Likes:** {likes:,}")
+                st.markdown(f"- **Engagement Rate:** {eng_rate}")
+                st.markdown(f"- **Offer Type:** {profile.get('offer_type', 'N/A')}")
+
+                if st.button(f"💬 Analyze @{channel_id}", key=f"analyze_btn_{channel_id}_{i}"):
+                    with st.spinner("🔍 Generating Gemini brand suitability insights..."):
+                        try:
+                            context = build_influencer_context(profile)
+                            result = get_brand_suitability(
+                                context,
+                                target_domain,
+                                target_audience,
+                                model_name="models/gemini-1.5-flash"
+                            )
+                            st.success("✅ Gemini Response")
+                            st.markdown(result)
+                        except Exception as e:
+                            st.error(f"❌ Gemini Error: {e}")
+
+    st.markdown('</div>', unsafe_allow_html=True)
