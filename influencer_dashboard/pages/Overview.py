@@ -1,48 +1,69 @@
-# pages/Overview.py
+# pages/segmentation.py
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from sklearn.preprocessing import MinMaxScaler
-from utils.metrics import calculate_metrics
 
-st.title("📊 Metrics Overview")
+st.header("🧩 Influencer Segmentation")
 
-if 'df' in st.session_state:
-    df = st.session_state['df']
-    metrics_summary = calculate_metrics(df)
+if 'df' not in st.session_state:
+    st.warning("📂 Please upload a dataset to explore segmentation.")
+    st.stop()
 
-    # Top-level summary
-    st.metric("Total Influencers", metrics_summary["total_influencers"])
-    st.metric("Total Reach", metrics_summary["total_reach"])
-    st.metric("Avg Engagement Rate", f"{metrics_summary['avg_eng_rate']:.2f}%")
-    st.metric("High Performers", metrics_summary["high_performers"])
+df = st.session_state['df'].copy()
 
-    st.subheader("📍 Influencer Radar: Normalized Profile Comparison")
+# Clean followers
+try:
+    df['followers'] = (
+        df['followers']
+        .astype(str)
+        .str.replace(',', '', regex=False)
+        .str.extract(r'(\d+)', expand=False)
+        .astype(float)
+    )
+except Exception as e:
+    st.error(f"❌ Could not process 'followers': {e}")
+    st.stop()
 
-    # Required columns
-    required_cols = ['channel_id', 'avg_likes', '60_day_eng_rate', 'influence_score']
-    if all(col in df.columns for col in required_cols):
-        # Normalize metrics for radar
-        radar_df = df.copy()
-        scaler = MinMaxScaler()
-        radar_df[['avg_likes', '60_day_eng_rate', 'influence_score']] = scaler.fit_transform(
-            radar_df[['avg_likes', '60_day_eng_rate', 'influence_score']]
-        )
-
-        top5 = radar_df[['channel_id', 'avg_likes', '60_day_eng_rate', 'influence_score']].dropna().head(5)
-        melted = top5.melt(id_vars='channel_id', var_name='Metric', value_name='value')
-
-        fig = px.line_polar(
-            melted,
-            r='value',
-            theta='Metric',
-            color='channel_id',
-            line_close=True,
-            title="Top 5 Influencer Profiles (Radar Chart)"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+# Segmentation
+def segment_influencer(followers):
+    if followers < 10_000:
+        return 'Nano'
+    elif followers < 100_000:
+        return 'Micro'
+    elif followers < 1_000_000:
+        return 'Macro'
     else:
-        st.warning("Missing one or more required columns for radar chart.")
-else:
-    st.warning("⚠️ Please upload your dataset first.")
+        return 'Mega'
+
+df['Segment'] = df['followers'].apply(segment_influencer)
+st.session_state['df'] = df  # Update with segment column
+
+# 📊 Segment Counts
+st.subheader("📊 Influencer Count by Segment")
+segment_counts = df['Segment'].value_counts().reset_index()
+segment_counts.columns = ['Segment', 'Count']
+fig1 = px.bar(segment_counts, x='Segment', y='Count', color='Segment', title="Number of Influencers per Segment")
+st.plotly_chart(fig1, use_container_width=True)
+
+# 📈 Engagement by Segment
+if '60_day_eng_rate' in df.columns:
+    try:
+        df['60_day_eng_rate'] = df['60_day_eng_rate'].astype(str).str.rstrip('%').astype(float)
+        eng_rate_seg = df.groupby('Segment')['60_day_eng_rate'].mean().reset_index()
+        st.subheader("📈 Avg Engagement Rate by Segment")
+        fig2 = px.bar(eng_rate_seg, x='Segment', y='60_day_eng_rate', color='Segment')
+        st.plotly_chart(fig2, use_container_width=True)
+    except Exception as e:
+        st.warning(f"⚠️ Error in engagement rate data: {e}")
+
+# ❤️ Likes per Segment
+if 'avg_likes' in df.columns:
+    try:
+        df['avg_likes'] = df['avg_likes'].astype(str).str.replace(',', '', regex=False).astype(float)
+        likes_seg = df.groupby('Segment')['avg_likes'].mean().reset_index()
+        st.subheader("❤️ Avg Likes per Post by Segment")
+        fig3 = px.bar(likes_seg, x='Segment', y='avg_likes', color='Segment')
+        st.plotly_chart(fig3, use_container_width=True)
+    except Exception as e:
+        st.warning(f"⚠️ Error in likes data: {e}")
