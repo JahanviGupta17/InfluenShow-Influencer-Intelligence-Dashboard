@@ -1,3 +1,5 @@
+# components/insight_generator.py
+
 import pandas as pd
 
 def convert_social_counts(val):
@@ -16,16 +18,25 @@ def convert_social_counts(val):
     except (ValueError, TypeError):
         return None
 
+def clean_engagement_string(val):
+    try:
+        if isinstance(val, str):
+            val = val.replace('%', '').strip()
+            return float(val) if val else None
+        return float(val)
+    except:
+        return None
+
 def generate_derived_features(df):
-    # Apply cleaning
     df['avg_likes'] = df['avg_likes'].apply(convert_social_counts)
     df['followers'] = df['followers'].apply(convert_social_counts)
 
-    # Ensure numeric
     df['avg_likes'] = pd.to_numeric(df['avg_likes'], errors='coerce')
     df['followers'] = pd.to_numeric(df['followers'], errors='coerce')
 
-    # Derived metrics
+    if '60_day_eng_rate' in df.columns:
+        df['60_day_eng_rate'] = df['60_day_eng_rate'].apply(clean_engagement_string)
+
     df['engagement_quality'] = df['avg_likes'] / df['followers'].replace(0, pd.NA)
     df['engagement_quality'] = df['engagement_quality'].fillna(0)
 
