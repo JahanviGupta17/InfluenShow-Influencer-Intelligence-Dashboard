@@ -1,33 +1,68 @@
-# influencer_dashboard/app.py
+# app.py
 import streamlit as st
 import pandas as pd
-from components import upload, clean_profile, domain_detection, insight_generator, visualizer, report_export
+from dotenv import load_dotenv
+from components import visualizer, llm_tab
+import os
 
-st.set_page_config(page_title="Influencer Intelligence Dashboard", layout="wide")
-st.title("🌐 Influencer Intelligence Dashboard")
+st.set_page_config(page_title="InfluenShow Dashboard", layout="wide")
 
-st.sidebar.title("📂 Upload Data")
-upload.upload_data()
+# Load CSS
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-if 'df' in st.session_state:
-    df = st.session_state['df']
+local_css("styles.css")
+load_dotenv()
 
-    # Clean and derive insights
-    df = clean_profile.clean_columns(df)
-    df = domain_detection.detect_content_domain(df)
-    df = insight_generator.generate_derived_features(df)  # likes/followers, growth trend, fake follower score
-    st.session_state['df'] = df
+st.title("🎯 InfluenShow – Influencer Intelligence Dashboard")
 
-    # Main Visualizations
-    visualizer.show_overview(df)
-    visualizer.show_segmentation(df)
-    visualizer.show_offer_analysis(df)
-    visualizer.show_discovery_filters(df)  # Search & filter
-    visualizer.show_ai_recommendations(df)  # OpenAI powered suggestions
-    visualizer.show_score_ranking(df)  # influence_score & brand_fit_score
-    visualizer.show_advanced_charts(df)  # radar, bubble, heatmap
+# 🔁 Column Normalization Logic
+def normalize_columns(df):
+    rename_map = {
+        'channel_info': 'channel_id',
+        'influencer_name': 'channel_id',
+        'engagement_rate': '60_day_eng_rate',
+        'niche': 'domain',
+        'personalized_offer': 'offer_type'
+    }
+    df.columns = df.columns.str.strip().str.lower()
+    df.rename(columns={k.lower(): v for k, v in rename_map.items()}, inplace=True)
+    return df
 
-    # Export
-    report_export.download_report_builder(df)
+# 📂 File uploader
+uploaded_file = st.file_uploader("Upload influencer data (.csv)", type=["csv"])
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    df = normalize_columns(df)
+    st.success("✅ Data uploaded and standardized!")
+
+    tabs = st.tabs([
+        "📊 Overview",
+        "🧩 Segmentation",
+        "🎯 Offer Analysis",
+        "🔍 Discovery Filters",
+        "🏆 Score Ranking",
+        "📈 Charts",
+        "🤖 LLM Advisor"
+    ])
+
+    with tabs[0]:
+        st.markdown('<div class="fadein">', unsafe_allow_html=True)
+        visualizer.show_overview(df)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with tabs[1]:
+        st.markdown('<div class="fadein">', unsafe_allow_html=True)
+        visualizer.show_segmentation(df)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with tabs[2]: visualizer.show_offer_analysis(df)
+    with tabs[3]: visualizer.show_discovery_filters(df)
+    with tabs[4]: visualizer.show_score_ranking(df)
+    with tabs[5]: visualizer.show_advanced_charts(df)
+    with tabs[6]: llm_tab.show_llm_tab(df)
+
 else:
-    st.info("📢 Upload a dataset to begin analysis.")
+    st.info("📁 Please upload a CSV file to get started.")
