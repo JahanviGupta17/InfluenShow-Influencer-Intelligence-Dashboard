@@ -2,7 +2,29 @@
 
 ## 📸 Explore how the dashboard looks and works through these live interface screenshots:
 
-<table> <tr> <td><img src="assets/Screenshot 2025-06-11 213538.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213713.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213726.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213744.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213758.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213809.png" width="400"/></td> </tr> <tr> <td><img src="assets/Screenshot 2025-06-11 213823.png" width="400"/></td> <td><img src="assets/Screenshot 2025-06-11 213837.png" width="400"/></td> </tr> </table>
+<table>
+  <tr>
+    <td><img src="assets/Screenshot 2025-06-11 213538.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-11 213713.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="assets/Screenshot 2025-06-11 213726.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-11 213744.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="assets/Screenshot 2025-06-11 213758.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-11 213809.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="assets/Screenshot 2025-06-11 213823.png" width="400"/></td>
+    <td><img src="assets/Screenshot 2025-06-11 213837.png" width="400"/></td>
+  </tr>
+    <tr>
+    <td><img src="assets/Screenshot 2025-06-26 230709.png" width="600"/></td>
+    <td><img src="assets/Screenshot 2025-06-26 230729.png" width="600"/></td>
+  </tr>
+</table>
+
 
 ---
 
@@ -151,10 +173,20 @@ The dashboard accepts any CSV with relevant influencer data (or connects via API
 
 Basic structure expected:
 
-| influencer\_name | followers | engagement\_rate | avg\_likes | niche | country | personalized\_offer |
-| ---------------- | --------- | ---------------- | ---------- | ----- | ------- | ------------------- |
+The uploaded CSV **must include the following columns** (exact format required):
 
----
+| channel_info     | followers | 60_day_eng_rate | avg_likes | influence_score | country     | domain     | offer_type     |
+|------------------|-----------|------------------|------------|------------------|--------------|-------------|----------------|
+| Riley Brown      | 1,234,567 | 5.23%            | 23456     | 5432.1           | USA          | Fashion     | Discount Code  |
+| Casey Nguyen     | 2,345,678 | 4.01%            | 12000     | 4100.5           | Germany      | Fitness     | Event Invite   |
+
+> ✅ Your uploaded file can also use these alternate names:
+> - `influencer_name` → `channel_id`
+> - `engagement_rate` → `60_day_eng_rate`
+> - `niche` → `domain`
+> - `personalized_offer` → `offer_type`
+
+These are auto-renamed internally.
 
 ## 🌐 Possible Real Integrations
 
